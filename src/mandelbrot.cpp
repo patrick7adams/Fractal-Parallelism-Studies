@@ -1,8 +1,7 @@
-#ifndef MANDELBROT_HPP
-#define MANDELBROT_HPP
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <vector>
 // Things to do with this:
 // Get OpenGL working and rendering points
 // CUDA Multithreading
@@ -43,32 +42,30 @@ int checkMandelbrot(const Point& p, const int numIterations) {
  *
  * @param Point topLeft, the top left point of the screen to render.
  * @param Point bottomRight, the bottom right point of the screen to render.
- * @param int numIterations, the maximum number of iterations of the mandelbrot equation to iterate through
- * before terminating.
+ * @param int numIterations, the maximum number of iterations of the mandelbrot equation to iterate through before terminating.
  * @param int resolutionX, the length of the screen in the horizontal plane.
  * @param int resolutionY, the length of the screen in the vertical plane.
  */
-void genMandelbrot(const Point& topLeft, const Point& bottomRight, const int numIterations, const int resolutionX, const int resolutionY) {
-    // creates output file
-    std::ofstream output;
-    output.open("output.txt");
+std::vector<std::vector<int>> genMandelbrot(const Point& topLeft, const Point& bottomRight, const int numIterations, const int resolutionX, const int resolutionY) {
+    std::vector<std::vector<int>> out;
+    out.reserve(resolutionX);
 
     float lenX = topLeft.r - bottomRight.r, lenY = topLeft.i - bottomRight.i;
     for (float i = 0; i <= resolutionX; i++) {
+        out.push_back(std::vector<int>());
+        out[i].reserve(resolutionY);
         for (float k = 0; k <= resolutionY; k++) {
-            // Finds the exact values to check the mandelbrot set with.
-            float xVal = topLeft.r - i / resolutionX * lenX, yVal = topLeft.i - k / resolutionY * lenY;
-
+            Point p = Point{ topLeft.r - i / resolutionX * lenX, topLeft.i - k / resolutionY * lenY };
             // Checks and outputs the number of iterations before the point diverges or terminates.
-            int n = checkMandelbrot(Point{ xVal, yVal }, numIterations);
-            output << n << " ";
+            out[i].push_back(checkMandelbrot(p, numIterations));
             // output << "(" << xVal << ", " << yVal << ") ";
         }
-        // creates a newline after each row
-        output << "\n";
     }
-
-    output.close();
+    // for (auto i : out) {
+       //  for (auto k : i) {
+        //     std::cout << k << " ";
+        // }
+       //  std::cout << std::endl;
+   //  }
+    return out;
 }
-
-#endif
