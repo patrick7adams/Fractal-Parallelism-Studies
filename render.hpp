@@ -1,9 +1,13 @@
+#ifndef RENDER_CPP
+#define RENDER_CPP
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <glfw/glfw3.h>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <filesystem>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -48,13 +52,14 @@ unsigned int initialize_shader(int shaderType) {
 	else if (shaderType == GL_FRAGMENT_SHADER) {
 		file.open("fragment.glsl");
 	}
-
+	if (!file) {
+		std::cout << "File not opened correctly!" << std::endl;
+	}
 	
 	std::stringstream stream;
 	stream << file.rdbuf();
 	file.close();
 	
-	file.close();
 	std::string tempStr = stream.str();
 	const char* temp = tempStr.c_str();
 	checkError();
@@ -105,9 +110,9 @@ int render(int iter, int resX, int resY, std::vector<std::vector<int>> iteration
 	// x, y, r, g, b
 	float vertices[] = {
 	//  x     y      r     g     b
-		0.0, 0.0, 0.0, 0.0, 1.0,
-		0.5, 0.0, 0.0, 0.0, 1.0,
-		0.0, 0.5, 0.0, 1.0, 0.0
+		1.0, 0.0, 1.0, 0.0, 0.0,
+		0.5, 0.25, 1.0, 0.0, 0.0,
+		0.0, 0.5, 1.0, 0.0, 0.0
 	};
 
 	unsigned int shaderProgram = initializeProgram();
@@ -134,7 +139,7 @@ int render(int iter, int resX, int resY, std::vector<std::vector<int>> iteration
 
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_POINTS, 1, 3);
+		glDrawArrays(GL_TRIANGLES, 1, 3);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
@@ -144,3 +149,4 @@ int render(int iter, int resX, int resY, std::vector<std::vector<int>> iteration
 	glfwTerminate();
 	return 0;
 }
+#endif

@@ -1,5 +1,5 @@
-#include "mandelbrot.cpp"
-#include "render.cpp"
+#include "mandelbrot.hpp"
+#include "render.hpp"
 
 int main() {
     Point tl = { -2, 1.25 }, br = { 0.5, -1.25 };

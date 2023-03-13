@@ -1,3 +1,5 @@
+#ifndef MANDELBROT_CPP
+#define MANDELBROT_CPP
 #include <iostream>
 #include <fstream>
 #include <math.h>
@@ -69,3 +71,4 @@ std::vector<std::vector<int>> genMandelbrot(const Point& topLeft, const Point& b
    //  }
     return out;
 }
+#endif
