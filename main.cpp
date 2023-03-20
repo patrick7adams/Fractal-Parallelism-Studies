@@ -1,11 +1,21 @@
 #include "mandelbrot.hpp"
 #include "render.hpp"
 
-#define resX 1000
-#define resY 1000
-#define iterations 1000
-
 int main() {
-    Point tl = { -2, 2 }, br = { 2, -2 };
-    render(genMandelbrot(tl, br, iterations, resX, resY));
+    Point tl = { -2, 1.25 }, br = { 0.5, -1.25 }, zm = { -0.748749753783, -0.069712607615 };
+    double zoomFactor = 0.02;
+    initializeRenderer();
+    while (true) {
+        printf("Starting a new generation...\n");
+        double* vertices = new double[totalPoints * 2];
+        double* colors = new double[totalPoints * 3];
+        genMandelbrot(vertices, colors, tl, br);
+        bufferData(vertices, colors);
+        render();
+        printf("Finished rendering, moving on...\n");
+        tl.r += zoomFactor * (zm.r - tl.r);
+        tl.i -= zoomFactor * (tl.i - zm.i);
+        br.r -= zoomFactor * (br.r - zm.r);
+        br.i += zoomFactor * (zm.i - br.i);
+    }
 }
