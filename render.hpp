@@ -9,6 +9,11 @@
 #include <vector>
 #include <filesystem>
 
+const int resX = 1000;
+const int resY = 1000;
+const int totalPoints = resX * resY;
+const int iterations = 1000;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
@@ -20,7 +25,7 @@ void checkError() {
 }
 
 // Initializes the window, GLFW, and Glad.
-GLFWwindow* initialize_window(int resX, int resY) {
+GLFWwindow* initialize_window() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -87,6 +92,8 @@ unsigned int initializeProgram() {
 	unsigned int shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
+	glBindAttribLocation(shaderProgram, 0, "vertices");
+	glBindAttribLocation(shaderProgram, 0, "colors");
 	glLinkProgram(shaderProgram);
 
 	int successProg;
@@ -103,43 +110,65 @@ unsigned int initializeProgram() {
 	return shaderProgram;
 }
 
-int render(int iter, int resX, int resY, std::vector<std::vector<int>> iterations) {
-	int totalPoints = resX * resY;
-	GLFWwindow* window = initialize_window(resX, resY);
-	// Vertex Data
-	// x, y, r, g, b
-	float vertices[] = {
-	//  x     y      r     g     b
-		1.0, 0.0, 1.0, 0.0, 0.0,
-		0.5, 0.25, 1.0, 0.0, 0.0,
-		0.0, 0.5, 1.0, 0.0, 0.0
-	};
+void getColor(float *color, int iter) {
+	for (int i = 0; i < 3; i++) {
+		if (iter == iterations) {
+			color[i] = 1.0;
+		}
+		else {
+			color[i] = 0.0;
+		}
+	}
+}
 
+int render(std::vector<std::vector<int>> vec) {
+	GLFWwindow* window = initialize_window();
+	int lenVertices = totalPoints * 2, lenColors = totalPoints * 3;
+	float* vertices = new float[lenVertices];
+	float* colors = new float[lenColors];
+	float* color = new float[3];
+
+	for (int i = 0; i < resX; i++) {
+		for (int k = 0; k < resY; k++) {
+			vertices[(i * resX + k)*2] = ((float)(i*2-resX))/(resX);
+			vertices[(i * resX + k)*2+1] = ((float)(k*2-resY))/(resY);
+			getColor(color, vec[i][k]);
+			colors[(i * resX + k) * 3] = color[0];
+			colors[(i * resX + k) * 3+1] = color[1];
+			colors[(i * resX + k) * 3+2] = color[2];
+		}
+	}
+	delete[] color;
 	unsigned int shaderProgram = initializeProgram();
 	// VBO and VAO Initialization
-	unsigned int VBO, VAO;
-	glGenBuffers(1, &VBO);
+
+	unsigned int VAO, vertex_buffer, color_buffer;
 	glGenVertexArrays(1, &VAO);
-	
 	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glGenBuffers(1, &vertex_buffer);
+	glGenBuffers(1, &color_buffer);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+	glBufferData(GL_ARRAY_BUFFER, lenVertices * sizeof(float), vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
+	delete[] vertices;
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(2*sizeof(float)));
+	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
+	glBufferData(GL_ARRAY_BUFFER, lenColors * sizeof(float), colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(1);
+	delete[] colors;
 	// Wireframe Mode
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+	glUseProgram(shaderProgram);
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 1, 3);
+		glDrawArrays(GL_POINTS, 0, resX*resY*2);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);

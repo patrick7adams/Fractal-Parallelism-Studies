@@ -1,8 +1,11 @@
 #include "mandelbrot.hpp"
 #include "render.hpp"
 
+#define resX 1000
+#define resY 1000
+#define iterations 1000
+
 int main() {
-    Point tl = { -2, 1.25 }, br = { 0.5, -1.25 };
-    int iter = 1000, resX = 1000, resY = 1000;
-    render(iter, resX, resY, genMandelbrot(tl, br, iter, resX, resY));
+    Point tl = { -2, 2 }, br = { 2, -2 };
+    render(genMandelbrot(tl, br, iterations, resX, resY));
 }
