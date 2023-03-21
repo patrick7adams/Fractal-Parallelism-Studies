@@ -3,12 +3,12 @@
 
 int main() {
     Point tl = { -2, 1.25 }, br = { 0.5, -1.25 }, zm = { -0.748749753783, -0.069712607615 };
-    double zoomFactor = 0.02;
+    double zoomFactor = 0.25;
     initializeRenderer();
     while (true) {
         printf("Starting a new generation...\n");
-        double* vertices = new double[totalPoints * 2];
-        double* colors = new double[totalPoints * 3];
+        float* vertices = new float[totalPoints * 2];
+        float* colors = new float[totalPoints * 3];
         genMandelbrot(vertices, colors, tl, br);
         bufferData(vertices, colors);
         render();

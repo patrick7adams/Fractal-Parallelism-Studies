@@ -8,7 +8,6 @@ const int resY = 1000;
 const int iterations = 1000;
 const int totalPoints = resX * resY;
 // Things to do with this:
-// Get OpenGL working and rendering points
 // CUDA Multithreading
 // Heterogeneous Processing
 /**
@@ -69,7 +68,7 @@ int checkMandelbrot(const Point& p) {
  * @param int resolutionX, the length of the screen in the horizontal plane.
  * @param int resolutionY, the length of the screen in the vertical plane.
  */
-void genMandelbrot(double* vertices, double* colors, const Point& topLeft, const Point& bottomRight) {
+void genMandelbrot(float* vertices, float* colors, const Point& topLeft, const Point& bottomRight) {
     printf("Generating set...\n");
     double lenX = topLeft.r - bottomRight.r, lenY = topLeft.i - bottomRight.i;
     int pixelIterations[iterations] = { 0 };
@@ -82,8 +81,8 @@ void genMandelbrot(double* vertices, double* colors, const Point& topLeft, const
             iter[i*resX+k] = pIter;
             pixelIterations[pIter]++;
             // Gets normalized vertices for rendering.
-            vertices[(i * resX + k) * 2] = ((double)(i * 2 - resX)) / (resX);
-            vertices[(i * resX + k) * 2 + 1] = ((double)(k * 2 - resY)) / (resY);
+            vertices[(i * resX + k) * 2] = ((float)(i * 2.0 - resX)) / (resX);
+            vertices[(i * resX + k) * 2 + 1] = ((float)(k * 2.0 - resY)) / (resY);
         }
     }
     // Coloring in the set.
@@ -95,7 +94,7 @@ void genMandelbrot(double* vertices, double* colors, const Point& topLeft, const
             colors[i * 3 + 2] = 0.0;
         }
         else {
-            double val = fmod(pow(((double)iter[i] / iterations) * 50, 1.5), 1);
+            float val = fmod(pow(((float)iter[i] / iterations) * 50, 1.5), 1);
             colors[i * 3] = val;
             colors[i * 3 + 1] = val;
             colors[i * 3 + 2] = 1.0 - val;

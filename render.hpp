@@ -109,7 +109,7 @@ unsigned int initializeProgram() {
 	return shaderProgram;
 }
 
-int initializeRenderer() {
+void initializeRenderer() {
 	printf("Initializing the renderer...\n");
 	window = initialize_window();
 
@@ -122,20 +122,20 @@ int initializeRenderer() {
 	glGenBuffers(1, &color_buffer);
 }
 
-void bufferData(double* vertices, double* colors) {
+void bufferData(float* vertices, float* colors) {
 	printf("Buffering new data...\n");
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-	glBufferData(GL_ARRAY_BUFFER, totalPoints * 2 * sizeof(double), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 0, (void*)0);
+	glBufferData(GL_ARRAY_BUFFER, totalPoints * 2 * sizeof(float), vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
-	delete[] vertices;
+	//delete[] vertices;
 
 	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	glBufferData(GL_ARRAY_BUFFER, totalPoints * 3 * sizeof(double), colors, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_DOUBLE, GL_FALSE, 0, (void*)0);
+	glBufferData(GL_ARRAY_BUFFER, totalPoints * 3 * sizeof(float), colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(1);
-	delete[] colors;
+	//delete[] colors;
 }
 
 void render() {
@@ -146,7 +146,7 @@ void render() {
 	glUseProgram(shaderProgram);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-
+	
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_POINTS, 0, totalPoints * 2);
 
