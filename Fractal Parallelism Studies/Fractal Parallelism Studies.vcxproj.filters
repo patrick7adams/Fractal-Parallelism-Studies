@@ -29,7 +29,7 @@
     <ClInclude Include="..\GLFW\glfw3native.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mandelbrot.hpp">
+    <ClInclude Include="..\mandelbrot.cu">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\render.hpp">
