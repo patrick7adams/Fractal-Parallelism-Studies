@@ -2,6 +2,8 @@
 #define RENDER_CPP
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -138,6 +140,24 @@ void bufferData(float* vertices, float* colors) {
 	//delete[] colors;
 }
 
+void save(float* colorData, int iter) {
+	#define RGB_CHANNEL_COUNT 3
+	#define FILENAME_LEN 10
+	printf("Saving image data...");
+
+	char filename[FILENAME_LEN];
+	sprintf_s(filename, FILENAME_LEN, "img_%d.ppm", iter);
+	FILE* file = fopen(filename, "wb");
+	fprintf(file, "P6\n%d %d 255\n", resX, resY);
+
+	// convert color data from (0, 1) scale to (0, 255)
+	// unsigned char* newColorData = (unsigned char*)malloc(3 * totalPoints*sizeof(int));
+	for (int i = 0; i < totalPoints*3; i++) {
+		fputc((int)(colorData[i] * 255), file);
+	}
+	// stbi_write_png(filename, resX, resY, RGB_CHANNEL_COUNT, newColorData, resX*sizeof(unsigned char));
+}
+
 void render() {
 	printf("Rendering the set...\n");
 	// Wireframe Mode
@@ -149,7 +169,6 @@ void render() {
 	
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_POINTS, 0, totalPoints * 2);
-
 	glfwPollEvents();
 	glfwSwapBuffers(window);
 }

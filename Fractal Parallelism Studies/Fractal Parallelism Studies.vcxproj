@@ -30,8 +30,9 @@
     <ClInclude Include="..\GLFW\glfw3.h" />
     <ClInclude Include="..\GLFW\glfw3native.h" />
     <ClInclude Include="..\KHR\khrplatform.h" />
-    <ClInclude Include="..\mandelbrot.cu" />
+    <ClInclude Include="..\mandelbrot.c" />
     <ClInclude Include="..\render.hpp" />
+    <ClInclude Include="..\stb_image_write.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\fragment.glsl">
@@ -80,9 +81,6 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.1.props" />
-  </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -111,7 +109,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(SolutionDir);$(WindowsSDK_IncludePath);$(CudaToolkitIncludeDir)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(SolutionDir);$(WindowsSDK_IncludePath)</IncludePath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -161,9 +159,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>/include/</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -173,7 +172,4 @@
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.1.targets" />
-  </ImportGroup>
 </Project>

@@ -29,7 +29,7 @@
     <ClInclude Include="..\GLFW\glfw3native.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mandelbrot.cu">
+    <ClInclude Include="..\mandelbrot.c">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\render.hpp">
@@ -39,6 +39,9 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="..\KHR\khrplatform.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stb_image_write.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
