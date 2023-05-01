@@ -1,26 +1,4 @@
-#ifndef MANDELBROT_CPP
-#define MANDELBROT_CPP
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-
-const int resX = 1000;
-const int resY = 1000;
-const int iterations = 100;
-const int totalPoints = resX * resY;
-
-struct Point {
-    double r; // Real component
-    double i; // Imaginary component
-};
-
-struct Bounds {
-    Point tl;
-    Point br;
-    double lenX;
-    double lenY;
-};
+#include "mandelbrot.h"
 
 /**
  * @brief Checks if a point is a part of the mandelbrot set.
@@ -31,11 +9,11 @@ struct Bounds {
  * @return int, the number of iterations that the point underwent before either the maximum number of
  * iterations is reached or the point diverges.
  */
-void checkMandelbrot(int iStart, int iLen, int* iter, const Point* p) {
+void checkMandelbrot(int iStart, int iLen, int* iter, const struct Point* p) {
     for (int i = iStart; i < iStart + iLen; i++) {
         if (i < totalPoints) {
-            Point lastP = { 0, 0 };
-            while (iter[i] < iterations && lastP.r * lastP.r + lastP.i * lastP.i <= 4) {
+            struct Point lastP = { 0, 0 };
+            while (iter[i] < maxIterations && lastP.r * lastP.r + lastP.i * lastP.i <= 4) {
                 // squares the real and the imaginary components and adds them with the first iteration.
                 double tempr = lastP.r;
                 lastP.r = (lastP.r * lastP.r - lastP.i * lastP.i) + p[i].r;
@@ -46,11 +24,11 @@ void checkMandelbrot(int iStart, int iLen, int* iter, const Point* p) {
     }
 }
 
-void initializePointsAndVertices(float* vertices, Point *points, Bounds *bounds) {
+void initializePointsAndVertices(float* vertices, struct Point *points, struct Bounds *bounds) {
     printf("Initializing points and vertices...\n");
     for (int k = 0; k < resY; k++) {
         for (int i = 0; i < resX; i++) {
-            points[k*resX+i] = Point{ bounds->tl.r + (double)i / resX * bounds->lenX, bounds->tl.i - (double)k / resY * bounds->lenY };
+            points[k*resX+i] = (struct Point){ bounds->tl.r + (double)i / resX * bounds->lenX, bounds->tl.i - (double)k / resY * bounds->lenY };
             vertices[(k * resX + i) * 2] = ((float)(i * 2.0 - resX)) / (resX);
             vertices[(k * resX + i) * 2 + 1] = ((float)(k * 2.0 - resY)) / (resY);
         }
@@ -73,17 +51,18 @@ float* normalizeColors(int* iter) {
         printf("Hue is null after malloc!");
         exit(EXIT_FAILURE);
     }
-    int numIterationsPerPixel[iterations] = { 0 };
+    int numIterationsPerPixel[maxIterations];
+    memset(numIterationsPerPixel, 0, maxIterations*sizeof(int));
     int pixelSum = 0;
     for (int i = 0; i < totalPoints; i++) {
         numIterationsPerPixel[iter[i]]++;
         hue[i] = 0.0f;
     }
-    for (int i = 0; i < iterations; i++) {
+    for (int i = 0; i < maxIterations; i++) {
         pixelSum += numIterationsPerPixel[i];
     }
     for (int i = 0; i < totalPoints; i++) {
-        for (int k = 0; k < iterations; k++) {
+        for (int k = 0; k < maxIterations; k++) {
             hue[i] += ((float) numIterationsPerPixel[k]) / pixelSum;
         }
     }
@@ -94,13 +73,13 @@ void genColor(float* colors, int* iter) {
     printf("Coloring set...\n");
     float* hue = normalizeColors(iter);
     for (int i = 0; i < totalPoints; i++) {
-        if (iter[i] == iterations) {
+        if (iter[i] == maxIterations) {
             colors[i * 3] = 0.0;
             colors[i * 3 + 1] = 0.0;
             colors[i * 3 + 2] = 0.0;
         }
         else {
-            float val = fmod(pow((hue[i] / iterations), 1.5f)*50, 50);
+            float val = fmod(pow((hue[i] / maxIterations), 1.5f)*50, 50);
             colors[i * 3] = 1.0f - val;
             colors[i * 3 + 1] = 1.0f - val;
             colors[i * 3 + 2] = val;
@@ -108,11 +87,11 @@ void genColor(float* colors, int* iter) {
     }
 }
 
-void genMandelbrot(float* vertices, float* colors,  Bounds *bounds) {
+void genMandelbrot(float* vertices, float* colors, struct Bounds *bounds) {
     printf("Generating set...\n");
     
     int* iter = (int*)malloc(sizeof(int) * totalPoints);
-    Point* points = (Point*)malloc(sizeof(Point) * totalPoints);
+    struct Point* points = (struct Point*)malloc(sizeof(struct Point) * totalPoints);
 
     if (iter == NULL || points == NULL) {
         printf("iter or points did not allocate memory correctly");
@@ -134,5 +113,4 @@ void genMandelbrot(float* vertices, float* colors,  Bounds *bounds) {
     free(iter);
     free(points);
 }
-#endif
 

@@ -1,27 +1,7 @@
-#ifndef RENDER_CPP
-#define RENDER_CPP
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <filesystem>
-#include <math.h>
-
-unsigned int VAO, vertex_buffer, color_buffer, shaderProgram;
-GLFWwindow* window;
+#include "render.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-}
-
-void checkError() {
-	if (glGetError() != GL_NO_ERROR) {
-		std::cout << "An error has been found!!!!!!" << std::endl;
-	}
 }
 
 // Initializes the window, GLFW, and Glad.
@@ -68,11 +48,11 @@ unsigned int initialize_shader(int shaderType) {
 	
 	std::string tempStr = stream.str();
 	const char* temp = tempStr.c_str();
-	checkError();
+
 	shader = glCreateShader(shaderType);
 	glShaderSource(shader, 1, &temp, NULL);
 	glCompileShader(shader);
-	checkError();
+
 	int success = 0;
 	char log[512];
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
@@ -81,7 +61,7 @@ unsigned int initialize_shader(int shaderType) {
 		std::cout << "Shader failed to compile.\n" << log << std::endl;
 		glDeleteShader(shader);
 	}
-	checkError();
+
 	return shader;
 }
 
@@ -111,20 +91,19 @@ unsigned int initializeProgram() {
 	return shaderProgram;
 }
 
-void initializeRenderer() {
+void initializeRenderer(unsigned int* shaderProgram, unsigned int* VAO, unsigned int* vertex_buffer, unsigned int* color_buffer, GLFWwindow* window) {
 	printf("Initializing the renderer...\n");
 	window = initialize_window();
-
-	shaderProgram = initializeProgram();
+	unsigned int tempval = initializeProgram();
+	shaderProgram = &tempval;
 	// VBO and VAO Initialization
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glGenBuffers(1, &vertex_buffer);
-	glGenBuffers(1, &color_buffer);
+	glGenVertexArrays(1, VAO);
+	glBindVertexArray(*VAO);
+	glGenBuffers(1, vertex_buffer);
+	glGenBuffers(1, color_buffer);
 }
 
-void bufferData(float* vertices, float* colors) {
+void bufferData(float* vertices, float* colors, unsigned int vertex_buffer, unsigned int color_buffer) {
 	printf("Buffering new data...\n");
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
@@ -146,7 +125,7 @@ void save(float* colorData, int iter) {
 	printf("Saving image data...");
 
 	char filename[FILENAME_LEN];
-	sprintf_s(filename, FILENAME_LEN, "img_%d.ppm", iter);
+	sprintf(filename, "img_%d.ppm", iter);
 	FILE* file = fopen(filename, "wb");
 	fprintf(file, "P6\n%d %d 255\n", resX, resY);
 
@@ -158,7 +137,7 @@ void save(float* colorData, int iter) {
 	// stbi_write_png(filename, resX, resY, RGB_CHANNEL_COUNT, newColorData, resX*sizeof(unsigned char));
 }
 
-void render() {
+void render(unsigned int VAO, GLFWwindow* window, unsigned int shaderProgram) {
 	printf("Rendering the set...\n");
 	// Wireframe Mode
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -172,4 +151,3 @@ void render() {
 	glfwPollEvents();
 	glfwSwapBuffers(window);
 }
-#endif

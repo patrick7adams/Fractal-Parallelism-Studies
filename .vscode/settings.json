@@ -1,0 +1,21 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/remote/Projects/Fractal-Parallelism-Studies/output-directory",
+            "binaryPath": "/home/remote/Projects/Fractal-Parallelism-Studies/output-directory/main",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "/home/remote/Projects/Fractal-Parallelism-Studies/bin",
+            "binaryPath": "/home/remote/Projects/Fractal-Parallelism-Studies/bin/main",
+            "binaryArgs": []
+        }
+    ],
+    "files.associations": {
+        "mandelbrot.c": "c",
+        "main.cpp": "cpp",
+        "render.cpp": "cpp",
+        "constants.h": "c"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
+}
