@@ -15,7 +15,10 @@
         "mandelbrot.c": "c",
         "main.cpp": "cpp",
         "render.cpp": "cpp",
-        "constants.h": "c"
+        "constants.h": "c",
+        "iostream": "cpp",
+        "filesystem": "cpp",
+        "ostream": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }

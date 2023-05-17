@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __CONSTANTS__
+#define __CONSTANTS__
 
 const int leftBound = -2;
 const int rightBound = -1.5;
@@ -15,9 +17,11 @@ const int juliaInputZX = 0;
 const int juliaInputZY = 0;
 const int circularJulia = 0;
 
-const int toggleSave = 1;
+const int toggleSave = 0;
 const int disableRendring = 0;
 const int FPS = 60;
 
-const int zoomDepth = 20;
+const int zoomDepth = 100;
 const int useZoomControls = 0;
+
+#endif

@@ -2,6 +2,7 @@
 
 #include "../util/constants.h"
 
+#include <string.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,8 +19,10 @@ struct Bounds {
     double lenY;
 };
 
+void initializePoints(struct Point *points, struct Bounds *bounds);
+void initializeVertices(float* vertices);
+
 void checkMandelbrot(int iStart, int iLen, int* iter, const struct Point* p);
-void initializePointsAndVertices(float* vertices, struct Point *points, struct Bounds *bounds);
 float* normalizeColors(int* iter);
 void genColor(float* colors, int* iter);
 void genMandelbrot(float* vertices, float* colors, struct Bounds *bounds);
