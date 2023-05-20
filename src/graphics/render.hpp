@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RENDER_HPP
+#define RENDER_HPP
 
 extern "C" {
 	#include "glad.h"
@@ -21,5 +22,4 @@ void initializeRenderer(unsigned int* VAO, unsigned int* vertex_buffer, unsigned
 void bufferData(float* vertices, float* colors, unsigned int vertex_buffer, unsigned int color_buffer);
 void save(float* colorData, int iter);
 void render(unsigned int VAO, GLFWwindow* window, unsigned int shaderProgram);
-
-// turn on -fno-common?
+#endif

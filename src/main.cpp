@@ -17,7 +17,10 @@ void compileVideo(int iter) {
 
 int main() {
     printf("\x1B[32mStarting Initialization!\033[0m\n");
-    Point tl = { -2, 1.25 }, br = { 0.5, -1.25 }, zm = { -0.748749753783, -0.069712607615 };
+    Point tl = { -2, 1.25 }, br = { 0.5, -1.25 }, 
+    zm = { -0.748749753783, -0.069712607615 }; // cool 1
+    // zm = { -0.104893985, -0.927865454 }; // minibrot cool
+    // zm = { -0.748478657, -0.069193702 }; // cool 2
     Bounds bds = { tl, br, br.r - tl.r, tl.i - br.i };
     
     int iter = 0;
@@ -38,23 +41,33 @@ int main() {
             printf("Vertices or Colors did not allocate memory correctly");
             exit(EXIT_FAILURE);
     }
+    double times[zoomDepth] = {0.0};
+
     printf("\x1B[32mFinished Initialization!\033[0m\n");
 
     while (iter < zoomDepth && !glfwWindowShouldClose(window)) {
         printf("\x1B[32mStarting generation %d!\033[0m\n", iter);
         printf("Bounds: (%f, %f) and (%f, %f)\n", bds.tl.r, bds.tl.i, bds.br.r, bds.br.i);
         
-        genMandelbrot(vertices, colors, &bds);
+        times[iter] = genMandelbrot(vertices, colors, &bds);
         bufferData(vertices, colors, vertex_buffer, color_buffer);
         render(VAO, window, shaderProgram);
-        // if (toggleSave) {
-        //     save(colors, iter);
-        // }
         zoom(&bds, &zm, zoomFactor);
         iter++;
     }
+    printf("\x1B[32mFinished iterating, exiting program!\033[0m\n");
     free(vertices);
     free(colors);
     // compileVideo(iter);
     glfwTerminate();
+    printf("All times recorded in %d iterations:\n(", iter);
+    for(int i = 0; i < iter-1; i++) {
+        printf("%f, ", times[i]);
+    }
+    printf("%f)\n", times[iter-1]);
+    double averageTime = 0.0;
+    for(int i = 0; i < iter; i++) {
+        averageTime+=times[i];
+    }
+    printf("Average time elapsed: %f\n", averageTime/iter);
 }

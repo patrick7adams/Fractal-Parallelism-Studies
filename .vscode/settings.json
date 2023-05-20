@@ -18,7 +18,9 @@
         "constants.h": "c",
         "iostream": "cpp",
         "filesystem": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "time.h": "c",
+        "mandelbrot.h": "c"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }

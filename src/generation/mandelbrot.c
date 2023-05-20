@@ -1,4 +1,6 @@
 #include "mandelbrot.h"
+#include "mandel.h"
+#include "mandel_cuda.cuh"
 
 void initializeVertices(float* vertices) {
     printf("Initializing vertices...\n");
@@ -6,7 +8,7 @@ void initializeVertices(float* vertices) {
         for (int i = 0; i < resX; i++) {
             vertices[(k * resX + i) * 2] = ((float)(i * 2.0f - resX)) / (resX);
             vertices[(k * resX + i) * 2 + 1] = ((float)(k * 2.0f - resY)) / (resY);
-        }
+        }// x1, y1, x2, y2, x3, y3...
     }
     printf("Initialized vertices!\n");
 }
@@ -20,24 +22,6 @@ void initializePoints(struct Point *points, struct Bounds *bounds) {
         }
     }
     printf("Initialized points from (%f, %f) to (%f, %f)\n", points[0].r, points[0].i, points[totalPoints - 1].r, points[totalPoints - 1].i);
-}
-
-void checkMandelbrot(int iStart, int iLen, int* iter, const struct Point* p) {
-    double tempr;
-    int it;
-    for (int i = iStart; i < iStart + iLen; i++) {
-        struct Point lastP = { 0.0, 0.0 };
-        it = 0;
-        while (it < maxIterations && lastP.r * lastP.r + lastP.i * lastP.i <= 4) {
-            // squares the real and the imaginary components and adds them with the first iteration.
-            tempr = lastP.r;
-            lastP.r = (lastP.r * lastP.r - lastP.i * lastP.i) + p[i].r;
-            lastP.i = 2.0 * tempr * lastP.i + p[i].i;
-            it++;
-        }
-        iter[i] = it;
-        // printf("Iteration %d at Point (%f, %f): %d\n", i, p[i].r, p[i].i, iter[i]);
-    }
 }
 
 float* normalizeColors(int* iter) {
@@ -85,7 +69,7 @@ void genColor(float* colors, int* iter) {
     // free(hue);
 }
 
-void genMandelbrot(float* vertices, float* colors, struct Bounds *bounds) {
+double genMandelbrot(float* vertices, float* colors, struct Bounds *bounds) {
     printf("Generating set...\n");
     
     int* iter = (int*) malloc(totalPoints * sizeof(int));
@@ -97,21 +81,29 @@ void genMandelbrot(float* vertices, float* colors, struct Bounds *bounds) {
     }
 
     initializePoints(points, bounds);
-
-    int lenSection = 1000;
-    int numSections = totalPoints / lenSection;
-    for (int i = 0; i < numSections; i++) {
-        checkMandelbrot(i * lenSection, lenSection, iter, points);
+    double elapsedTime;
+    char* threadTypeName;
+    switch(threadingType) {
+        case BASE:
+            threadTypeName = "BASE";
+            elapsedTime = base_gen(iter, points);
+            break;
+        case OMP:
+            threadTypeName = "OMP";
+            elapsedTime = omp_gen(iter, points);
+            break;
+        case CUDA:
+            threadTypeName = "CUDA";
+            elapsedTime = cuda_gen(iter, points);
+            break;
     }
-
+    printf("Utilizing %s threading\n", threadTypeName);
+    printf("Time elapsed for this iteration: %f\n", elapsedTime);
     printf("Finished generating points!\n");
-    // checkMandelbrot(499000, 1000, iter, points);
-    // Gets normalized vertices for rendering.
-            
-    // Coloring in the set.
     genColor(colors, iter);
     
     free(iter);
     free(points);
+    return elapsedTime;
 }
 
